@@ -19,7 +19,6 @@ public class RoundView extends View implements Animation.AnimationListener {
     private final int MODE_LEFT_NARROW = 2;
     private final int MODE_RIGHT_EXTEND = 3;
     private Paint mPaint;
-    private int mDefaultRadius = 15;
     private int mSpaceEach = 15;
     private int mCount = 7;
     private float mFactor = 1.0f;
@@ -27,7 +26,7 @@ public class RoundView extends View implements Animation.AnimationListener {
     private float mBigRadius = 15;
     private float mBaseRadius;
     private RoundAnimation roundAnimation;
-    private float[] floats;
+    private float[] mFactors;
     private int mode = MODE_LEFT_EXTEND;
     private float mStartX, mStartY;
 
@@ -51,14 +50,14 @@ public class RoundView extends View implements Animation.AnimationListener {
         roundAnimation = new RoundAnimation();
         roundAnimation.setDuration(600);
         roundAnimation.setAnimationListener(this);
-        floats = new float[mCount];
+        mFactors = new float[mCount];
         mBaseRadius = (mBigRadius - mSmallRadius) / mCount;
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mStartX = w / 2 - (mBigRadius * mCount * 2 + mSpaceEach * (mCount - 1)) / 2;
+        mStartX = (w - mBigRadius * 2 * mCount - mSpaceEach * (mCount - 1)) / 2;
         mStartY = h / 2;
     }
 
@@ -66,24 +65,28 @@ public class RoundView extends View implements Animation.AnimationListener {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        setFactors();
         for (int i = 0; i < mCount; i++) {
-            floats[i] = mFactor;
-            if (floats[i] <= i + 1) {
-                floats[i] = i + 1;
+            switch (mode) {
+                case MODE_LEFT_EXTEND:
+                case MODE_LEFT_NARROW:
+                    canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
+                            mStartY, mSmallRadius + mBaseRadius * mFactors[i], mPaint);
+                    break;
+                case MODE_RIGHT_NARROW:
+                case MODE_RIGHT_EXTEND:
+                    canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
+                            mStartY, mSmallRadius + mBaseRadius * mFactors[mCount - 1 - i], mPaint);
+                    break;
             }
         }
+    }
 
+    private void setFactors() {
         for (int i = 0; i < mCount; i++) {
-            if (mode == MODE_LEFT_EXTEND || mode == MODE_LEFT_NARROW) {
-                canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
-                        mStartY, mSmallRadius + mBaseRadius * floats[i], mPaint);
-//                canvas.drawCircle(mStartX + (mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
-//                        mStartY, mSmallRadius + mBaseRadius * floats[i], mPaint);
-            } else if (mode == MODE_RIGHT_NARROW || mode == MODE_RIGHT_EXTEND) {
-//                canvas.drawCircle(mStartX + (mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
-//                        mStartY, mSmallRadius + mBaseRadius * floats[mCount - 1 - i], mPaint);
-                canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
-                        mStartY, mSmallRadius + mBaseRadius * floats[mCount - 1 - i], mPaint);
+            mFactors[i] = mFactor;
+            if (mFactors[i] <= i + 1) {
+                mFactors[i] = i + 1;
             }
         }
     }

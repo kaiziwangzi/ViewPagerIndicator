@@ -19,16 +19,17 @@ public class RoundView extends View implements Animation.AnimationListener {
     private final int MODE_LEFT_NARROW = 2;
     private final int MODE_RIGHT_EXTEND = 3;
     private Paint mPaint;
-    private int mDefaultRadius = 10;
-    private int mSpaceEach = 5;
-    private int mCount = 6;
+    private int mDefaultRadius = 15;
+    private int mSpaceEach = 15;
+    private int mCount = 7;
     private float mFactor = 1.0f;
-    private float mSmallRadius = 4;
-    private float mBigRadius = 10;
+    private float mSmallRadius = 8;
+    private float mBigRadius = 15;
     private float mBaseRadius;
     private RoundAnimation roundAnimation;
     private float[] floats;
     private int mode = MODE_LEFT_EXTEND;
+    private float mStartX, mStartY;
 
     public RoundView(Context context) {
         this(context, null);
@@ -48,10 +49,17 @@ public class RoundView extends View implements Animation.AnimationListener {
         mPaint.setColor(0xffff4081);
         mPaint.setStyle(Paint.Style.FILL);
         roundAnimation = new RoundAnimation();
-        roundAnimation.setDuration(1000);
+        roundAnimation.setDuration(600);
         roundAnimation.setAnimationListener(this);
         floats = new float[mCount];
         mBaseRadius = (mBigRadius - mSmallRadius) / mCount;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mStartX = w / 2 - (mBigRadius * mCount * 2 + mSpaceEach * (mCount - 1)) / 2;
+        mStartY = h / 2;
     }
 
     @Override
@@ -67,11 +75,15 @@ public class RoundView extends View implements Animation.AnimationListener {
 
         for (int i = 0; i < mCount; i++) {
             if (mode == MODE_LEFT_EXTEND || mode == MODE_LEFT_NARROW) {
-                canvas.drawCircle((mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
-                        mDefaultRadius, mSmallRadius + mBaseRadius * floats[i], mPaint);
+                canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
+                        mStartY, mSmallRadius + mBaseRadius * floats[i], mPaint);
+//                canvas.drawCircle(mStartX + (mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
+//                        mStartY, mSmallRadius + mBaseRadius * floats[i], mPaint);
             } else if (mode == MODE_RIGHT_NARROW || mode == MODE_RIGHT_EXTEND) {
-                canvas.drawCircle((mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
-                        mDefaultRadius, mSmallRadius + mBaseRadius * floats[mCount - 1 - i], mPaint);
+//                canvas.drawCircle(mStartX + (mDefaultRadius + mSpaceEach) * i + (i + 1) * mDefaultRadius * 2,
+//                        mStartY, mSmallRadius + mBaseRadius * floats[mCount - 1 - i], mPaint);
+                canvas.drawCircle(mStartX + mBigRadius + i * (2 * mBigRadius + mSpaceEach),
+                        mStartY, mSmallRadius + mBaseRadius * floats[mCount - 1 - i], mPaint);
             }
         }
     }

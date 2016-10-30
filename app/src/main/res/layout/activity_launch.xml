@@ -10,10 +10,16 @@
         android:layout_height="100dp"
         android:text="start" />
 
-    <com.brook.viewpagerindicator.RoundView
-        android:id="@+id/roundView"
+    <com.brook.viewpagerindicator.view.IndicatorView
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_marginTop="20dp" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp" />
+
+    <!--<com.brook.viewpagerindicator.RoundView-->
+    <!--android:id="@+id/roundView"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginTop="20dp" />-->
 
 </LinearLayout>
